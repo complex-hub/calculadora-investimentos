@@ -19,7 +19,10 @@ export function renderRatesPanel(rates: GlobalRates): void {
 /**
  * Updates the rates status message.
  */
-export function setRatesStatus(message: string, type: 'loading' | 'success' | 'error'): void {
+export function setRatesStatus(
+  message: string, 
+  type: 'loading' | 'success' | 'error'
+): void {
   const statusElement = document.getElementById('rates-status');
   
   if (!statusElement) return;
@@ -33,10 +36,33 @@ export function setRatesStatus(message: string, type: 'loading' | 'success' | 'e
 }
 
 /**
+ * Shows the refresh button.
+ */
+export function showRefreshButton(show: boolean): void {
+  const button = document.getElementById('refresh-rates-btn');
+  if (button) {
+    button.style.display = show ? 'inline-flex' : 'none';
+  }
+}
+
+/**
+ * Sets the refresh button loading state.
+ */
+export function setRefreshButtonLoading(loading: boolean): void {
+  const button = document.getElementById('refresh-rates-btn') as HTMLButtonElement;
+  if (button) {
+    button.disabled = loading;
+    button.textContent = loading ? '⏳' : '🔄';
+    button.title = loading ? 'Atualizando...' : 'Atualizar taxas do Banco Central';
+  }
+}
+
+/**
  * Sets up event listeners for manual rate changes.
  */
 export function initializeRatesPanelHandlers(
-  onRateChange: (key: keyof GlobalRates, value: number) => void
+  onRateChange: (key: keyof GlobalRates, value: number) => void,
+  onRefresh: () => Promise<void>
 ): void {
   const inputs: { id: string; key: keyof GlobalRates }[] = [
     { id: 'rate-cdi', key: 'cdi' },
@@ -61,7 +87,6 @@ export function initializeRatesPanelHandlers(
         onRateChange(key, value);
       } else {
         console.warn(`Invalid rate value for ${key}:`, input.value);
-        // Could reset to previous value here
       }
     });
 
@@ -72,6 +97,16 @@ export function initializeRatesPanelHandlers(
       }
     });
   });
+
+  // Refresh button
+  const refreshBtn = document.getElementById('refresh-rates-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', async () => {
+      setRefreshButtonLoading(true);
+      await onRefresh();
+      setRefreshButtonLoading(false);
+    });
+  }
 
   console.log('Rates panel handlers initialized');
 }

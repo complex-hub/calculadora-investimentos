@@ -115,3 +115,14 @@ export function getInvestmentById(
 ): Investment | undefined {
   return state.investments.find(inv => inv.id === investmentId);
 }
+
+/**
+ * Replaces all investments in state.
+ */
+export function setInvestments(state: AppState, investments: Investment[]): AppState {
+  return {
+    ...state,
+    investments,
+    editingInvestmentId: null,
+  };
+}
