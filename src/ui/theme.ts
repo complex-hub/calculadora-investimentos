@@ -4,7 +4,6 @@
  */
 
 const THEME_STORAGE_KEY = 'investment-calculator-theme';
-const DARK_THEME_CLASS = 'dark';
 const DATA_THEME_ATTR = 'data-theme';
 
 export type Theme = 'light' | 'dark';
