@@ -1,4 +1,6 @@
-Nota: Esse projeto foi criado para uso pessoal, usando IA generativa.
+**Nota:** Esse projeto foi criado para uso pessoal, usando IA generativa.  
+
+---
 
 # Calculadora de Investimentos
 
