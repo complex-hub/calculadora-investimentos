@@ -14,7 +14,8 @@ import {
   initializeRatesPanelHandlers, 
   setRatesStatus 
 } from './ui/ratesPanel';
-import { formatDateForInput, parseInputDate, getToday, getDefaultEndDate } from './utils/dates';
+import { formatDateForInput, parseInputDate, getToday } from './utils/dates';
+import { runCalculationTests } from './calculations/tests';
 
 // ===== Application State =====
 
@@ -26,7 +27,6 @@ async function main(): Promise<void> {
   console.log('Investment Calculator starting...');
 
   // 1. Initialize state with default rates
-  // (In Phase 2+, we'll fetch rates from API here)
   state = createInitialState();
   setRatesStatus('Usando taxas padrão', 'success');
 
@@ -34,6 +34,7 @@ async function main(): Promise<void> {
   renderRatesPanel(state.globalRates);
   renderInvestmentList(
     state.investments,
+    state.globalRates,
     handleInvestmentEdit,
     handleInvestmentRemove
   );
@@ -59,13 +60,13 @@ function handleInvestmentSubmit(investment: Investment): void {
   // Re-render UI
   renderInvestmentList(
     state.investments,
+    state.globalRates,
     handleInvestmentEdit,
     handleInvestmentRemove
   );
 
   // TODO: Update chart (Phase 4)
   console.log('Updated state:', state);
-  console.log('TODO: Update chart with new investment');
 }
 
 function handleInvestmentEdit(id: string): void {
@@ -89,6 +90,7 @@ function handleInvestmentRemove(id: string): void {
   // Re-render UI
   renderInvestmentList(
     state.investments,
+    state.globalRates,
     handleInvestmentEdit,
     handleInvestmentRemove
   );
@@ -98,7 +100,6 @@ function handleInvestmentRemove(id: string): void {
 
   // TODO: Update chart (Phase 4)
   console.log('Updated state:', state);
-  console.log('TODO: Update chart after removal');
 }
 
 function handleRateChange(key: keyof GlobalRates, value: number): void {
@@ -110,9 +111,16 @@ function handleRateChange(key: keyof GlobalRates, value: number): void {
   // Re-render rates panel (to normalize display)
   renderRatesPanel(state.globalRates);
 
-  // TODO: Update chart (Phase 4) - all investments need recalculation
+  // Re-render investment list (returns will recalculate)
+  renderInvestmentList(
+    state.investments,
+    state.globalRates,
+    handleInvestmentEdit,
+    handleInvestmentRemove
+  );
+
+  // TODO: Update chart (Phase 4)
   console.log('Updated state:', state);
-  console.log('TODO: Recalculate all investments with new rates');
 }
 
 // ===== Chart End Date =====
@@ -137,10 +145,26 @@ function initializeChartEndDateHandler(): void {
     if (newDate && newDate > getToday()) {
       state = setChartEndDate(state, newDate);
       console.log('Chart end date changed:', newDate);
-      console.log('TODO: Update chart with new end date');
+      // TODO: Update chart (Phase 4)
     }
   });
 }
+
+// ===== Development Helpers =====
+
+declare global {
+  interface Window {
+    appState: () => AppState;
+    runTests: () => void;
+  }
+}
+
+window.appState = () => state;
+window.runTests = runCalculationTests;
+
+console.log('💡 Debug helpers available:');
+console.log('   window.appState() - Get current app state');
+console.log('   window.runTests() - Run calculation tests');
 
 // ===== Start Application =====
 

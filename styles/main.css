@@ -383,6 +383,16 @@ select {
   text-overflow: ellipsis;
 }
 
+.investment-item-return {
+  font-size: 0.75rem;
+  color: var(--color-success);
+  margin-top: var(--spacing-xs);
+}
+
+.investment-item-return strong {
+  font-weight: 600;
+}
+
 .investment-item-actions {
   display: flex;
   gap: var(--spacing-xs);

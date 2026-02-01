@@ -1,12 +1,14 @@
-import type { Investment } from '../types';
+import type { Investment, GlobalRates } from '../types';
 import { formatInvestmentType } from '../utils/formatting';
 import { formatDate } from '../utils/dates';
+import { calculateEquivalentRates } from '../calculations';
 
 /**
  * Renders the list of investments in the sidebar/list container.
  */
 export function renderInvestmentList(
   investments: Investment[],
+  rates: GlobalRates,
   onEdit: (id: string) => void,
   onRemove: (id: string) => void
 ): void {
@@ -31,7 +33,7 @@ export function renderInvestmentList(
 
   // Render each investment
   investments.forEach(investment => {
-    const item = createInvestmentListItem(investment, onEdit, onRemove);
+    const item = createInvestmentListItem(investment, rates, onEdit, onRemove);
     listElement.appendChild(item);
   });
 
@@ -43,6 +45,7 @@ export function renderInvestmentList(
  */
 function createInvestmentListItem(
   investment: Investment,
+  rates: GlobalRates,
   onEdit: (id: string) => void,
   onRemove: (id: string) => void
 ): HTMLLIElement {
@@ -56,11 +59,18 @@ function createInvestmentListItem(
     : 'Sem vencimento';
   const taxDisplay = investment.isTaxed ? 'Com IR' : 'Isento';
 
+  // Calculate returns for display
+  const equivalentRates = calculateEquivalentRates(investment, rates);
+  const netReturn1Y = (equivalentRates.net365Days * 100).toFixed(2);
+
   li.innerHTML = `
     <div class="investment-item-info">
       <span class="investment-item-name">${escapeHtml(investment.name)}</span>
       <span class="investment-item-details">
-        ${rateDisplay} · ${dueDateDisplay} · ${taxDisplay}
+        ${rateDisplay} · ${taxDisplay}
+      </span>
+      <span class="investment-item-return">
+        Rend. líquido 1 ano: <strong>${netReturn1Y}%</strong>
       </span>
     </div>
     <div class="investment-item-actions">
