@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparador de Investimentos</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Left Panel: Form + List -->
+    <aside class="sidebar">
+      
+      <!-- Global Rates Panel -->
+      <section class="rates-panel">
+        <h2>Taxas Globais</h2>
+        <div class="rates-grid">
+          <label>
+            <span>CDI (% a.a.)</span>
+            <input type="text" id="rate-cdi" inputmode="decimal" placeholder="10,65">
+          </label>
+          <label>
+            <span>IPCA (% a.a.)</span>
+            <input type="text" id="rate-ipca" inputmode="decimal" placeholder="4,50">
+          </label>
+          <label>
+            <span>SELIC (% a.a.)</span>
+            <input type="text" id="rate-selic" inputmode="decimal" placeholder="10,75">
+          </label>
+        </div>
+        <p class="rates-status" id="rates-status">Carregando taxas...</p>
+      </section>
+
+      <hr class="divider">
+
+      <!-- Investment Form -->
+      <section class="investment-form">
+        <h2>Adicionar Investimento</h2>
+        <form id="investment-form">
+          
+          <label>
+            <span>Nome do investimento</span>
+            <input 
+              type="text" 
+              id="investment-name" 
+              placeholder="Ex: CDB Banco XYZ"
+              required
+            >
+          </label>
+
+          <label>
+            <span>Tipo de rendimento</span>
+            <select id="investment-type" required>
+              <option value="cdi-percent">X% do CDI</option>
+              <option value="ipca-plus">IPCA + X% a.a.</option>
+              <option value="cdi-plus">CDI + X% a.a.</option>
+              <option value="prefixed">X% a.a. (Pré-fixado)</option>
+              <option value="selic-plus">SELIC + X% a.a.</option>
+            </select>
+          </label>
+
+          <label>
+            <span id="rate-label">Percentual do CDI (%)</span>
+            <input 
+              type="text" 
+              id="investment-rate" 
+              inputmode="decimal" 
+              placeholder="Ex: 110"
+              required
+            >
+          </label>
+
+          <!-- Only visible for cdi-percent type -->
+          <div class="form-group" id="tax-toggle-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="investment-taxed" checked>
+              <span>Incide Imposto de Renda</span>
+            </label>
+            <p class="form-hint">Desmarque para LCA/LCI (isentos de IR)</p>
+          </div>
+
+          <label>
+            <span>Data de vencimento</span>
+            <input type="date" id="investment-due-date">
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="investment-no-due-date">
+            <span>Sem vencimento definido</span>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="form-submit-btn">
+              Adicionar ao gráfico
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <hr class="divider">
+
+      <!-- Investment List -->
+      <section class="investment-list-section">
+        <h2>Investimentos Adicionados</h2>
+        <ul id="investment-list" class="investment-list">
+          <!-- Dynamically populated -->
+          <li class="investment-item-empty">
+            Nenhum investimento adicionado ainda.
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+    <!-- Right Panel: Chart -->
+    <main class="chart-area">
+      <header class="chart-header">
+        <h1>Comparação de Rendimentos</h1>
+        <div class="chart-controls">
+          <label>
+            <span>Data final do gráfico:</span>
+            <input type="date" id="chart-end-date">
+          </label>
+        </div>
+      </header>
+      
+      <div class="chart-container">
+        <canvas id="investment-chart"></canvas>
+        <div class="chart-placeholder">
+          <p>📊</p>
+          <p>Adicione investimentos para visualizar o gráfico de comparação.</p>
+        </div>
+      </div>
+      
+      <footer class="chart-footer">
+        <p class="chart-disclaimer">
+          * Projeções baseadas nas taxas atuais. Rendimentos reais podem variar.
+          Rendimentos líquidos (após IR, quando aplicável).
+        </p>
+      </footer>
+    </main>
+
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
