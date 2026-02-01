@@ -58,23 +58,22 @@ export function buildInvestmentDataPoints(
     });
   }
   
-  // Also include tax bracket transition days for taxed investments
-  if (investment.isTaxed) {
-    const taxDays = [180, 181, 360, 361, 720, 721];
-    taxDays.forEach(day => {
-      if (day <= totalDays) {
-        const date = addDays(startDate, day);
-        const timestamp = date.getTime();
-        // Only add if not already in points
-        if (!points.find(p => p.x === timestamp)) {
-          points.push({
-            x: timestamp,
-            y: netReturns[day],
-          });
-        }
+  // Also include tax bracket transition days for all investments
+  // This ensures datasets are aligned for tooltip sync (index mode)
+  const taxDays = [180, 181, 360, 361, 720, 721];
+  taxDays.forEach(day => {
+    if (day <= totalDays) {
+      const date = addDays(startDate, day);
+      const timestamp = date.getTime();
+      // Only add if not already in points
+      if (!points.find(p => p.x === timestamp)) {
+        points.push({
+          x: timestamp,
+          y: netReturns[day],
+        });
       }
-    });
-  }
+    }
+  });
   
   // Sort by date
   points.sort((a, b) => a.x - b.x);

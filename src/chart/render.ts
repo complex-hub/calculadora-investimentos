@@ -172,7 +172,7 @@ export function updateChart(
 
 /**
  * Calculates the appropriate end date based on investments.
- * Returns max due date, or startDate + default period if no due dates.
+ * Returns max due date, or startDate if no due dates.
  */
 export function calculateChartEndDate(
   investments: Investment[],
@@ -182,8 +182,8 @@ export function calculateChartEndDate(
   const investmentsWithDueDate = investments.filter(inv => inv.dueDate !== null);
   
   if (investmentsWithDueDate.length === 0) {
-    // No due dates, use default period (1 year)
-    return addDays(startDate, DEFAULT_CHART_PERIOD_DAYS);
+    // No due dates constraint
+    return startDate;
   }
   
   // Find the latest due date
@@ -192,9 +192,8 @@ export function calculateChartEndDate(
     return inv.dueDate > latest ? inv.dueDate : latest;
   }, investmentsWithDueDate[0].dueDate!);
   
-  // Ensure it's at least the default period
-  const defaultEnd = addDays(startDate, DEFAULT_CHART_PERIOD_DAYS);
-  return latestDueDate > defaultEnd ? latestDueDate : defaultEnd;
+  // Ensure we don't return something before start date (shouldn't happen with valid data)
+  return latestDueDate > startDate ? latestDueDate : startDate;
 }
 
 /**
