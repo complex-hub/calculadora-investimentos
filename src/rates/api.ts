@@ -1,5 +1,5 @@
 import type { GlobalRates } from '../types';
-import { DEFAULT_RATES, BCB_SERIES } from '../constants';
+import { BCB_SERIES } from '../constants';
 
 /**
  * BCB API response format.
@@ -12,10 +12,18 @@ interface BCBResponse {
 /**
  * CORS proxy options for BCB API.
  * We try multiple proxies in case one fails.
+ * 
+ * Note: Public proxies can be unstable. In a production environment,
+ * it is recommended to set up your own proxy server.
  */
 const CORS_PROXIES = [
-  'https://corsproxy.io/?',
+  // Often most reliable for JSON data
   'https://api.allorigins.win/raw?url=',
+  // Good alternatives
+  'https://thingproxy.freeboard.io/fetch/',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  // Fallbacks
+  'https://corsproxy.io/?',
 ] as const;
 
 /**
@@ -77,12 +85,16 @@ async function fetchFromBCB(seriesCode: number): Promise<number | null> {
   // Try each CORS proxy
   for (const proxy of CORS_PROXIES) {
     try {
+      // AllOrigins and others expect encoded URLs
       const proxyUrl = `${proxy}${encodeURIComponent(bcbUrl)}`;
+      console.log(`Trying proxy: ${proxy}...`);
+      
       const response = await fetchWithTimeout(proxyUrl);
 
       if (response.ok) {
         const data: BCBResponse[] = await response.json();
         if (data && data.length > 0) {
+          console.log(`Success with proxy: ${proxy}`);
           return parseFloat(data[data.length - 1].valor);
         }
       }
@@ -141,6 +153,7 @@ export async function fetchIPCA(): Promise<number | null> {
     // Fetch last 12 months of IPCA
     const bcbUrl = buildBCBUrl(BCB_SERIES.ipca, 12);
     
+    // Manual loop for IPCA since URL is different (uses last 12 items)
     for (const proxy of CORS_PROXIES) {
       try {
         const proxyUrl = `${proxy}${encodeURIComponent(bcbUrl)}`;
@@ -201,7 +214,19 @@ export async function fetchAllRates(): Promise<FetchStatus> {
     fetchSelic(),
   ]);
 
-  const rates: GlobalRates = { ...DEFAULT_RATES };
+  // Use a temporary object to hold fetched values, but don't depend on DEFAULT_RATES import
+  // which causes circular dependencies or unused vars.
+  // The caller (manager.ts) should handle merging with defaults if needed,
+  // or we return a partial object.
+  // However, preserving existing logic: we return the defaults if fetch fails.
+  // We'll define defaults locally to avoid import issues.
+  const localDefaults: GlobalRates = {
+     cdi: 0.1065,
+     ipca: 0.045,
+     selic: 0.1075
+  };
+
+  const rates: GlobalRates = { ...localDefaults };
 
   if (cdi !== null) {
     rates.cdi = cdi;
