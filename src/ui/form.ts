@@ -1,7 +1,7 @@
 import type { Investment, InvestmentType } from '../types';
-import { INVESTMENT_TYPES, getInvestmentTypeInfo } from '../constants';
+import { getInvestmentTypeInfo } from '../constants';
 import { parseRateInput, generateId } from '../utils/formatting';
-import { parseInputDate, getToday, isValidDueDate } from '../utils/dates';
+import { parseInputDate, isValidDueDate } from '../utils/dates';
 
 // ===== DOM Element References =====
 

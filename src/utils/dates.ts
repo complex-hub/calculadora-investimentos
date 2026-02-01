@@ -1,4 +1,4 @@
-import { DAYS_IN_YEAR, DEFAULT_CHART_PERIOD_DAYS } from '../constants';
+import { DEFAULT_CHART_PERIOD_DAYS } from '../constants';
 
 /**
  * Returns the number of days between two dates.

@@ -56,9 +56,6 @@ function createInvestmentListItem(
   li.dataset.color = String(colorIndex % 10); // For CSS color indicator
 
   const rateDisplay = formatInvestmentType(investment.type, investment.rate);
-  const dueDateDisplay = investment.dueDate 
-    ? formatDate(investment.dueDate) 
-    : 'Sem vencimento';
   const taxDisplay = investment.isTaxed ? 'Com IR' : 'Isento';
 
   // Calculate returns for display

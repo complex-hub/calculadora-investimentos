@@ -253,7 +253,7 @@ export function runCalculationTests(): void {
   // ===== Equivalent Rates Test =====
   console.log('\n--- Equivalent Rates Summary ---');
   
-  Object.entries(testInvestments).forEach(([key, inv]) => {
+  Object.entries(testInvestments).forEach(([_, inv]) => {
     const rates = calculateEquivalentRates(inv, TEST_RATES);
     console.log(`\n${inv.name}:`);
     console.log(`  Effective annual (gross): ${(rates.grossAnnual * 100).toFixed(2)}%`);

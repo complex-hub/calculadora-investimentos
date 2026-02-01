@@ -15,8 +15,7 @@ import { ptBR } from 'date-fns/locale';
 import type { Investment, GlobalRates } from '../types';
 import { getChartOptions, TAX_BRACKET_LINE_COLOR } from './config';
 import { buildAllDatasets, buildTaxBracketLines, type TaxBracketLine } from './datasets';
-import { daysBetween, addDays, getToday } from '../utils/dates';
-import { DEFAULT_CHART_PERIOD_DAYS } from '../constants';
+import { daysBetween } from '../utils/dates';
 
 // Register Chart.js components
 Chart.register(

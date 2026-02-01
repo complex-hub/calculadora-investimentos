@@ -1,6 +1,6 @@
 import type { Investment, AppState } from '../types';
 import { getToday, addDays } from '../utils/dates';
-import { DEFAULT_CHART_PERIOD_DAYS, DEFAULT_RATES } from '../constants';
+import { DEFAULT_CHART_PERIOD_DAYS } from '../constants';
 
 /**
  * LocalStorage keys.

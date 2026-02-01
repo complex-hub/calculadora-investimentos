@@ -75,21 +75,34 @@ export function getChartOptions(): ChartOptions<'line'> {
         callbacks: {
           title: (tooltipItems: TooltipItem<'line'>[]) => {
             if (tooltipItems.length === 0) return '';
-            const date = new Date(tooltipItems[0].parsed.x);
+            const xValue = tooltipItems[0].parsed.x;
+            if (xValue === null || xValue === undefined) return '';
+            const date = new Date(xValue);
             return formatTooltipDate(date);
           },
           label: (context: TooltipItem<'line'>) => {
             const value = context.parsed.y;
+            if (value === null || value === undefined) return '';
             const percentage = (value * 100).toFixed(2);
             return `  ${context.dataset.label}: ${percentage}%`;
           },
           afterBody: (tooltipItems: TooltipItem<'line'>[]) => {
             if (tooltipItems.length === 0) return '';
             
+            const xValue = tooltipItems[0].parsed.x;
+            if (xValue === null || xValue === undefined) return '';
+            
             // Calculate days from start
-            const startDate = new Date(tooltipItems[0].chart.options.plugins?.title?.text as string || Date.now());
-            const currentDate = new Date(tooltipItems[0].parsed.x);
-            const days = Math.round((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+            const firstDataset = tooltipItems[0].chart.data.datasets[0];
+            if (!firstDataset || !firstDataset.data || firstDataset.data.length === 0) {
+              return '';
+            }
+            
+            const firstPoint = firstDataset.data[0] as { x: number };
+            if (!firstPoint || typeof firstPoint.x !== 'number') return '';
+            
+            const startTimestamp = firstPoint.x;
+            const days = Math.round((xValue - startTimestamp) / (1000 * 60 * 60 * 24));
             
             return `\n  📅 ${days} dias`;
           },

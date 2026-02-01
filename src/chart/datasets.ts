@@ -1,5 +1,5 @@
 import type { ChartDataset } from 'chart.js';
-import type { Investment, GlobalRates, ChartDataPoint } from '../types';
+import type { Investment, GlobalRates } from '../types';
 import { generateNetReturnSeries } from '../calculations';
 import { addDays, daysBetween } from '../utils/dates';
 import { getColorForIndex } from './config';

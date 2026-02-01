@@ -1,5 +1,4 @@
 import type { GlobalRates } from '../types';
-import { DEFAULT_RATES } from '../constants';
 import { fetchAllRates, type FetchStatus } from './api';
 
 /**

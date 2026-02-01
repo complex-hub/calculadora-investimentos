@@ -1,4 +1,4 @@
-import type { Investment, GlobalRates, InvestmentType } from '../types';
+import type { Investment, GlobalRates } from '../types';
 import { DAYS_IN_YEAR } from '../constants';
 import { calculateNetReturn } from './taxation';
 
