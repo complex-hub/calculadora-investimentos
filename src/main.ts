@@ -16,6 +16,7 @@ import {
   setRatesStatus,
   showRefreshButton,
 } from './ui/ratesPanel';
+import { initializeTheme, initializeThemeToggle } from './ui/theme';
 import { 
   formatDateForInput, 
   parseInputDate, 
@@ -48,6 +49,9 @@ let state: AppState;
 
 async function main(): Promise<void> {
   console.log('Investment Calculator starting...');
+
+  // 0. Initialize theme
+  initializeTheme();
 
   // 1. Show loading state
   setRatesStatus('Buscando taxas do Banco Central...', 'loading');
@@ -97,6 +101,7 @@ async function main(): Promise<void> {
   initializeWindowResizeHandler();
   initializeClearAllHandler();
   initializeExportImportHandlers();
+  initializeThemeToggle();
 
   console.log('Investment Calculator initialized');
   console.log('Initial state:', state);
