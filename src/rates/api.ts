@@ -17,11 +17,12 @@ interface BCBResponse {
  * it is recommended to set up your own proxy server.
  */
 const CORS_PROXIES = [
-  // Prioritize CodeTabs and ThingProxy as they are often more stable for this API
-  'https://api.codetabs.com/v1/proxy?quest=',
-  'https://thingproxy.freeboard.io/fetch/',
-  // Fallbacks
+  // Often most reliable for JSON data
   'https://api.allorigins.win/raw?url=',
+  // Good alternatives
+  'https://thingproxy.freeboard.io/fetch/',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  // Fallbacks
   'https://corsproxy.io/?',
 ] as const;
 
