@@ -299,12 +299,20 @@ function initializeChartEndDateHandler(): void {
 
 function initializeWindowResizeHandler(): void {
   let resizeTimeout: number;
+  let lastWidth = window.innerWidth;
   
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
+    
     resizeTimeout = window.setTimeout(() => {
-      refreshChart();
-    }, 250);
+      const currentWidth = window.innerWidth;
+      
+      // Only handle significant width changes
+      if (Math.abs(currentWidth - lastWidth) > 50) {
+        lastWidth = currentWidth;
+        refreshChart();
+      }
+    }, 300);
   });
 }
 

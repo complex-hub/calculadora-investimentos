@@ -36,6 +36,14 @@ let chartInstance: Chart<'line'> | null = null;
 // Store tax bracket lines for custom drawing
 let taxBracketLines: TaxBracketLine[] = [];
 
+// Store current data for re-rendering
+let currentData: {
+  investments: Investment[];
+  rates: GlobalRates;
+  startDate: Date;
+  endDate: Date;
+} | null = null;
+
 /**
  * Custom plugin to draw tax bracket vertical lines.
  */
@@ -48,6 +56,8 @@ const taxBracketLinesPlugin = {
     const ctx = chart.ctx;
     const xScale = chart.scales.x;
     const yScale = chart.scales.y;
+    
+    if (!xScale || !yScale) return;
     
     ctx.save();
     
@@ -88,6 +98,7 @@ export function initializeChart(canvas: HTMLCanvasElement): Chart<'line'> {
   // Destroy existing chart if any
   if (chartInstance) {
     chartInstance.destroy();
+    chartInstance = null;
   }
   
   const options = getChartOptions();
@@ -123,6 +134,9 @@ export function updateChart(
     console.error('Chart not initialized');
     return;
   }
+  
+  // Store current data for resize re-renders
+  currentData = { investments, rates, startDate, endDate };
   
   // Build datasets
   const datasets = buildAllDatasets(investments, rates, startDate, endDate);
@@ -199,6 +213,7 @@ export function destroyChart(): void {
     chartInstance = null;
   }
   taxBracketLines = [];
+  currentData = null;
 }
 
 /**
@@ -206,23 +221,55 @@ export function destroyChart(): void {
  */
 export function toggleChartPlaceholder(show: boolean): void {
   const placeholder = document.querySelector('.chart-placeholder') as HTMLElement;
-  const canvas = document.getElementById('investment-chart') as HTMLCanvasElement;
+  const wrapper = document.querySelector('.chart-wrapper') as HTMLElement;
   
   if (placeholder) {
     placeholder.style.display = show ? 'block' : 'none';
   }
   
-  if (canvas) {
-    canvas.style.display = show ? 'none' : 'block';
+  if (wrapper) {
+    wrapper.style.visibility = show ? 'hidden' : 'visible';
   }
 }
 
 /**
- * Refreshes the chart with current data.
- * Useful after window resize.
+ * Properly handles chart resize.
+ * Destroys and recreates the chart to ensure proper dimensions.
+ */
+export function handleChartResize(): void {
+  if (!chartInstance || !currentData) return;
+  
+  const canvas = chartInstance.canvas;
+  if (!canvas) return;
+  
+  // Store parent reference before destroying
+  const parent = canvas.parentElement;
+  if (!parent) return;
+  
+  // Destroy current chart
+  chartInstance.destroy();
+  
+  // Reset canvas dimensions
+  canvas.style.width = '';
+  canvas.style.height = '';
+  canvas.width = 0;
+  canvas.height = 0;
+  
+  // Recreate chart
+  chartInstance = initializeChart(canvas);
+  
+  // Re-apply data
+  updateChart(
+    currentData.investments,
+    currentData.rates,
+    currentData.startDate,
+    currentData.endDate
+  );
+}
+
+/**
+ * Refreshes the chart size (simple resize).
  */
 export function refreshChart(): void {
-  if (chartInstance) {
-    chartInstance.resize();
-  }
+  handleChartResize();
 }

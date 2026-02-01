@@ -448,16 +448,18 @@ select {
   flex: 1;
   position: relative;
   min-height: 400px;
+  max-height: 600px; /* Prevent over-elongation */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
+/* Force canvas to respect container bounds */
 .chart-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100% !important;
   height: 100% !important;
 }
@@ -503,6 +505,39 @@ select {
   display: block;
 }
 
+/* Inner wrapper for proper sizing */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .chart-container {
+    min-height: 300px;
+    max-height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    min-height: 250px;
+    max-height: 350px;
+  }
+}
+
 .chart-placeholder {
   position: absolute;
   top: 50%;
@@ -525,8 +560,13 @@ select {
 }
 
 /* Chart legend styling */
-.chart-area canvas {
-  max-width: 100%;
+.chart-area {
+  flex: 1;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevent flex overflow */
+  overflow: hidden; /* Prevent resize issues */
 }
 
 /* Chart controls */

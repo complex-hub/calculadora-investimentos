@@ -6,6 +6,7 @@ export {
   destroyChart,
   toggleChartPlaceholder,
   refreshChart,
+  handleChartResize,
 } from './render';
 
 export {
