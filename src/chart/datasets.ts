@@ -27,22 +27,29 @@ export function buildInvestmentDataPoints(
   startDate: Date,
   endDate: Date
 ): ChartPoint[] {
-  const totalDays = daysBetween(startDate, endDate);
+  const chartTotalDays = daysBetween(startDate, endDate);
   
   // Handle edge case
-  if (totalDays <= 0) {
+  if (chartTotalDays <= 0) {
     return [{ x: startDate.getTime(), y: 0 }];
   }
+
+  // Calculate when this specific investment ends
+  const investmentLimitDays = investment.dueDate 
+    ? daysBetween(startDate, investment.dueDate)
+    : Infinity;
   
-  // Generate net returns for each day
-  const netReturns = generateNetReturnSeries(investment, rates, totalDays);
+  // The line should stop at the earlier of: the chart end or the investment due date
+  const effectiveDays = Math.min(chartTotalDays, investmentLimitDays);
+  
+  // Generate net returns up to the effective end
+  const netReturns = generateNetReturnSeries(investment, rates, effectiveDays);
   
   // Convert to chart points
-  // We don't need every single day - sample based on total period
   const points: ChartPoint[] = [];
-  const sampleInterval = getSampleInterval(totalDays);
+  const sampleInterval = getSampleInterval(chartTotalDays);
   
-  for (let day = 0; day <= totalDays; day += sampleInterval) {
+  for (let day = 0; day <= effectiveDays; day += sampleInterval) {
     const date = addDays(startDate, day);
     points.push({
       x: date.getTime(),
@@ -50,19 +57,20 @@ export function buildInvestmentDataPoints(
     });
   }
   
-  // Always include the last day
-  if (points.length === 0 || points[points.length - 1].x !== addDays(startDate, totalDays).getTime()) {
+  // Always include the last day of the investment's line
+  const lastTimestamp = addDays(startDate, effectiveDays).getTime();
+  if (points.length === 0 || points[points.length - 1].x !== lastTimestamp) {
     points.push({
-      x: addDays(startDate, totalDays).getTime(),
-      y: netReturns[totalDays],
+      x: lastTimestamp,
+      y: netReturns[effectiveDays],
     });
   }
   
-  // Also include tax bracket transition days for all investments
-  // This ensures datasets are aligned for tooltip sync (index mode)
+  // Also include tax bracket transition days for all investments (for tooltip sync)
+  // But ONLY if they are within this investment's lifespan
   const taxDays = [180, 181, 360, 361, 720, 721];
   taxDays.forEach(day => {
-    if (day <= totalDays) {
+    if (day <= effectiveDays) {
       const date = addDays(startDate, day);
       const timestamp = date.getTime();
       // Only add if not already in points
