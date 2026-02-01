@@ -47,28 +47,28 @@ export const INVESTMENT_TYPES: InvestmentTypeInfo[] = [
     label: 'IPCA + X% a.a.',
     rateLabel: 'Taxa adicional (% a.a.)',
     ratePlaceholder: 'Ex: 6.5',
-    alwaysTaxed: true,
+    alwaysTaxed: false,
   },
   {
     value: 'cdi-plus',
     label: 'CDI + X% a.a.',
     rateLabel: 'Taxa adicional (% a.a.)',
     ratePlaceholder: 'Ex: 2',
-    alwaysTaxed: true,
+    alwaysTaxed: false,
   },
   {
     value: 'prefixed',
     label: 'X% a.a. (Pré-fixado)',
     rateLabel: 'Taxa anual (%)',
     ratePlaceholder: 'Ex: 12.5',
-    alwaysTaxed: true,
+    alwaysTaxed: false,
   },
   {
     value: 'selic-plus',
     label: 'SELIC + X% a.a.',
     rateLabel: 'Taxa adicional (% a.a.)',
     ratePlaceholder: 'Ex: 0.1',
-    alwaysTaxed: true,
+    alwaysTaxed: false,
   },
 ];
 
