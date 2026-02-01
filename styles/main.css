@@ -487,6 +487,127 @@ select {
   text-align: center;
 }
 
+/* ===== Chart Enhancements ===== */
+
+.chart-container {
+  flex: 1;
+  position: relative;
+  min-height: 400px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+}
+
+.chart-container canvas {
+  display: block;
+}
+
+.chart-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.chart-placeholder p:first-child {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.chart-placeholder p:last-child {
+  font-size: 0.9375rem;
+  max-width: 300px;
+}
+
+/* Chart legend styling */
+.chart-area canvas {
+  max-width: 100%;
+}
+
+/* Chart controls */
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.chart-controls label {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.chart-controls label span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.chart-controls input[type="date"] {
+  width: auto;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+/* Tax bracket legend */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.chart-legend-line {
+  width: 20px;
+  height: 0;
+  border-top: 2px dashed var(--color-text-light);
+}
+
+/* ===== Investment Item Enhancements ===== */
+
+.investment-item {
+  position: relative;
+}
+
+.investment-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--investment-color, var(--color-primary));
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+/* Color indicators for investments */
+.investment-item[data-color="0"]::before { background: #2563eb; }
+.investment-item[data-color="1"]::before { background: #dc2626; }
+.investment-item[data-color="2"]::before { background: #16a34a; }
+.investment-item[data-color="3"]::before { background: #ca8a04; }
+.investment-item[data-color="4"]::before { background: #9333ea; }
+.investment-item[data-color="5"]::before { background: #0891b2; }
+.investment-item[data-color="6"]::before { background: #ea580c; }
+.investment-item[data-color="7"]::before { background: #be185d; }
+.investment-item[data-color="8"]::before { background: #4f46e5; }
+.investment-item[data-color="9"]::before { background: #059669; }
+
 /* ===== Utility Classes ===== */
 .hidden {
   display: none !important;

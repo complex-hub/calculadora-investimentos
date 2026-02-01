@@ -14,8 +14,20 @@ import {
   initializeRatesPanelHandlers, 
   setRatesStatus 
 } from './ui/ratesPanel';
-import { formatDateForInput, parseInputDate, getToday } from './utils/dates';
+import { 
+  formatDateForInput, 
+  parseInputDate, 
+  getToday,
+  getDefaultEndDate 
+} from './utils/dates';
 import { runCalculationTests } from './calculations/tests';
+import {
+  initializeChart,
+  updateChart,
+  calculateChartEndDate,
+  toggleChartPlaceholder,
+  refreshChart,
+} from './chart';
 
 // ===== Application State =====
 
@@ -30,7 +42,14 @@ async function main(): Promise<void> {
   state = createInitialState();
   setRatesStatus('Usando taxas padrão', 'success');
 
-  // 2. Render initial UI
+  // 2. Initialize chart
+  const canvas = document.getElementById('investment-chart') as HTMLCanvasElement;
+  if (canvas) {
+    initializeChart(canvas);
+    toggleChartPlaceholder(true); // Show placeholder initially
+  }
+
+  // 3. Render initial UI
   renderRatesPanel(state.globalRates);
   renderInvestmentList(
     state.investments,
@@ -40,13 +59,47 @@ async function main(): Promise<void> {
   );
   initializeChartEndDate();
 
-  // 3. Set up event handlers
+  // 4. Set up event handlers
   initializeFormHandlers(handleInvestmentSubmit);
   initializeRatesPanelHandlers(handleRateChange);
   initializeChartEndDateHandler();
+  initializeWindowResizeHandler();
 
   console.log('Investment Calculator initialized');
   console.log('Initial state:', state);
+}
+
+// ===== Chart Update Helper =====
+
+function updateChartWithCurrentState(): void {
+  const startDate = getToday();
+  
+  // Recalculate end date based on investments
+  const autoEndDate = calculateChartEndDate(state.investments, startDate);
+  
+  // Use the later of: auto-calculated end date or user-set end date
+  const endDate = autoEndDate > state.chartEndDate ? autoEndDate : state.chartEndDate;
+  
+  // Update state if end date changed
+  if (endDate.getTime() !== state.chartEndDate.getTime()) {
+    state = setChartEndDate(state, endDate);
+    updateChartEndDateInput(endDate);
+  }
+  
+  // Toggle placeholder based on whether there are investments
+  toggleChartPlaceholder(state.investments.length === 0);
+  
+  // Update chart
+  if (state.investments.length > 0) {
+    updateChart(state.investments, state.globalRates, startDate, endDate);
+  }
+}
+
+function updateChartEndDateInput(date: Date): void {
+  const input = document.getElementById('chart-end-date') as HTMLInputElement;
+  if (input) {
+    input.value = formatDateForInput(date);
+  }
 }
 
 // ===== Event Handlers =====
@@ -65,7 +118,9 @@ function handleInvestmentSubmit(investment: Investment): void {
     handleInvestmentRemove
   );
 
-  // TODO: Update chart (Phase 4)
+  // Update chart
+  updateChartWithCurrentState();
+
   console.log('Updated state:', state);
 }
 
@@ -98,7 +153,9 @@ function handleInvestmentRemove(id: string): void {
   // Reset form if we were editing this investment
   resetForm();
 
-  // TODO: Update chart (Phase 4)
+  // Update chart
+  updateChartWithCurrentState();
+
   console.log('Updated state:', state);
 }
 
@@ -119,7 +176,9 @@ function handleRateChange(key: keyof GlobalRates, value: number): void {
     handleInvestmentRemove
   );
 
-  // TODO: Update chart (Phase 4)
+  // Update chart with new rates
+  updateChartWithCurrentState();
+
   console.log('Updated state:', state);
 }
 
@@ -145,8 +204,21 @@ function initializeChartEndDateHandler(): void {
     if (newDate && newDate > getToday()) {
       state = setChartEndDate(state, newDate);
       console.log('Chart end date changed:', newDate);
-      // TODO: Update chart (Phase 4)
+      updateChartWithCurrentState();
     }
+  });
+}
+
+// ===== Window Resize Handler =====
+
+function initializeWindowResizeHandler(): void {
+  let resizeTimeout: number;
+  
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = window.setTimeout(() => {
+      refreshChart();
+    }, 250);
   });
 }
 
@@ -156,15 +228,18 @@ declare global {
   interface Window {
     appState: () => AppState;
     runTests: () => void;
+    updateChart: () => void;
   }
 }
 
 window.appState = () => state;
 window.runTests = runCalculationTests;
+window.updateChart = updateChartWithCurrentState;
 
 console.log('💡 Debug helpers available:');
 console.log('   window.appState() - Get current app state');
 console.log('   window.runTests() - Run calculation tests');
+console.log('   window.updateChart() - Force chart update');
 
 // ===== Start Application =====
 

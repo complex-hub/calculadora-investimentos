@@ -31,9 +31,9 @@ export function renderInvestmentList(
     return;
   }
 
-  // Render each investment
-  investments.forEach(investment => {
-    const item = createInvestmentListItem(investment, rates, onEdit, onRemove);
+  // Render each investment with color index
+  investments.forEach((investment, index) => {
+    const item = createInvestmentListItem(investment, rates, index, onEdit, onRemove);
     listElement.appendChild(item);
   });
 
@@ -46,12 +46,14 @@ export function renderInvestmentList(
 function createInvestmentListItem(
   investment: Investment,
   rates: GlobalRates,
+  colorIndex: number,
   onEdit: (id: string) => void,
   onRemove: (id: string) => void
 ): HTMLLIElement {
   const li = document.createElement('li');
   li.className = 'investment-item';
   li.dataset.id = investment.id;
+  li.dataset.color = String(colorIndex % 10); // For CSS color indicator
 
   const rateDisplay = formatInvestmentType(investment.type, investment.rate);
   const dueDateDisplay = investment.dueDate 
