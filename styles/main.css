@@ -554,6 +554,12 @@ select {
   white-space: nowrap;
 }
 
+.input-with-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
 .chart-controls label span {
   font-size: 0.875rem;
   font-weight: 500;

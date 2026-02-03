@@ -21,6 +21,7 @@ import {
   formatDateForInput, 
   parseInputDate, 
   getToday,
+  getDefaultEndDate,
 } from './utils/dates';
 import { runCalculationTests } from './calculations/tests';
 import {
@@ -102,6 +103,7 @@ async function main(): Promise<void> {
   initializeClearAllHandler();
   initializeExportImportHandlers();
   initializeThemeToggle();
+  initializeRevertChartDateHandler();
 
   console.log('Investment Calculator initialized');
   console.log('Initial state:', state);
@@ -112,19 +114,7 @@ async function main(): Promise<void> {
 
 function updateChartWithCurrentState(): void {
   const startDate = getToday();
-  
-  // Recalculate end date based on investments
-  const autoEndDate = calculateChartEndDate(state.investments, startDate);
-  
-  // Use the later of: auto-calculated end date or user-set end date
-  const endDate = autoEndDate > state.chartEndDate ? autoEndDate : state.chartEndDate;
-  
-  // Update state if end date changed
-  if (endDate.getTime() !== state.chartEndDate.getTime()) {
-    state = setChartEndDate(state, endDate);
-    updateChartEndDateInput(endDate);
-    saveChartEndDate(endDate);
-  }
+  const endDate = state.chartEndDate;
   
   // Toggle placeholder based on whether there are investments
   toggleChartPlaceholder(state.investments.length === 0);
@@ -297,6 +287,37 @@ function initializeChartEndDateHandler(): void {
       console.log('Chart end date changed:', newDate);
       updateChartWithCurrentState();
     }
+  });
+}
+
+function initializeRevertChartDateHandler(): void {
+  const btn = document.getElementById('revert-chart-date-btn');
+  if (!btn) return;
+
+  btn.addEventListener('click', () => {
+    const startDate = getToday();
+    
+    // Logic: 
+    // 1. Filter investments with due dates
+    const investmentsWithDueDate = state.investments.filter(inv => inv.dueDate !== null);
+    
+    let newEndDate: Date;
+    
+    if (investmentsWithDueDate.length === 0) {
+      // If no due dates, set to 1 year in the future
+      newEndDate = getDefaultEndDate();
+    } else {
+      // If at least one due date, set to the latest one
+      newEndDate = calculateChartEndDate(state.investments, startDate);
+    }
+    
+    // Update state and UI
+    state = setChartEndDate(state, newEndDate);
+    saveChartEndDate(newEndDate);
+    updateChartEndDateInput(newEndDate);
+    updateChartWithCurrentState();
+    
+    showToast('Data do gráfico ajustada');
   });
 }
 
