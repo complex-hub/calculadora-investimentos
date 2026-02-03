@@ -86,7 +86,8 @@ p {
 /* ===== Layout ===== */
 .app-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -107,6 +108,7 @@ p {
   display: flex;
   flex-direction: column;
   min-width: 0; /* Prevent flex overflow */
+  overflow-y: auto;
 }
 
 /* ===== Divider ===== */
@@ -348,18 +350,16 @@ select {
 
 /* ===== Investment List ===== */
 .investment-list-section {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  /* Removed flex: 1 to prevent layout collapse and ensure sidebar scrolling works as intended */
 }
 
 .investment-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  overflow-y: auto;
-  flex: 1;
+  /* Removed overflow-y: auto and flex: 1 to let the list expand fully */
 }
 
 .investment-item {
@@ -469,6 +469,7 @@ select {
   flex: 1;
   position: relative;
   min-height: 400px;
+  max-height: 700px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -645,6 +646,9 @@ select {
 @media (max-width: 900px) {
   .app-container {
     flex-direction: column;
+    height: auto;
+    overflow: visible;
+    min-height: 100vh;
   }
   
   .sidebar {
