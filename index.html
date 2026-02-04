@@ -6,8 +6,8 @@
   <meta name="description" content="Compare rendimentos de investimentos de renda fixa brasileiros (CDB, LCA, LCI, Tesouro Direto)">
   <title>Comparador de Investimentos</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
-  <script type="module" crossorigin src="/calculadora-investimentos/assets/index-B-0UPEUv.js"></script>
-  <link rel="stylesheet" crossorigin href="/calculadora-investimentos/assets/index-35aUipmZ.css">
+  <script type="module" crossorigin src="/calculadora-investimentos/assets/index-HKrzuMiI.js"></script>
+  <link rel="stylesheet" crossorigin href="/calculadora-investimentos/assets/index-Dyx17Q2f.css">
 </head>
 <body>
   <div class="app-container">
@@ -175,9 +175,23 @@
       <header class="chart-header">
         <h1>Comparação de Rendimentos</h1>
         <div class="chart-controls">
+          <label class="checkbox-label">
+            <input type="checkbox" id="toggle-baseline-btn">
+            <span>Comparar com 100% CDI</span>
+          </label>
           <label>
             <span>Data final:</span>
-            <input type="date" id="chart-end-date">
+            <div class="input-with-action">
+              <input type="date" id="chart-end-date">
+              <button 
+                type="button" 
+                id="revert-chart-date-btn" 
+                class="btn-icon" 
+                title="Ajustar automaticamente para o vencimento mais longo"
+              >
+                🔄
+              </button>
+            </div>
           </label>
         </div>
       </header>
