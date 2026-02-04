@@ -12,6 +12,12 @@ interface ChartPoint {
   y: number;  // Net return as decimal
 }
 
+interface DatasetStyle {
+  color?: string;
+  borderDash?: number[];
+  borderWidth?: number;
+}
+
 /**
  * Builds the data series for a single investment.
  * 
@@ -109,10 +115,11 @@ export function buildInvestmentDataset(
   rates: GlobalRates,
   startDate: Date,
   endDate: Date,
-  colorIndex: number
+  colorIndex: number,
+  styleOptions?: DatasetStyle
 ): ChartDataset<'line', ChartPoint[]> {
   const data = buildInvestmentDataPoints(investment, rates, startDate, endDate);
-  const color = getColorForIndex(colorIndex);
+  const color = styleOptions?.color || getColorForIndex(colorIndex);
   
   return {
     label: investment.name,
@@ -126,7 +133,8 @@ export function buildInvestmentDataset(
     pointHoverBackgroundColor: color,
     pointHoverBorderColor: '#ffffff',
     pointHoverBorderWidth: 2,
-    borderWidth: 2,
+    borderWidth: styleOptions?.borderWidth || 2,
+    borderDash: styleOptions?.borderDash || [],
   };
 }
 
@@ -137,11 +145,39 @@ export function buildAllDatasets(
   investments: Investment[],
   rates: GlobalRates,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  showBaseline: boolean = false
 ): ChartDataset<'line', ChartPoint[]>[] {
-  return investments.map((investment, index) => 
+  const datasets = investments.map((investment, index) => 
     buildInvestmentDataset(investment, rates, startDate, endDate, index)
   );
+
+  if (showBaseline) {
+    const baselineInvestment: Investment = {
+      id: 'baseline-cdi',
+      name: '100% do CDI (Base)',
+      type: 'cdi-percent',
+      rate: 100,
+      isTaxed: true,
+      dueDate: null,
+      createdAt: new Date(),
+    };
+
+    datasets.push(buildInvestmentDataset(
+      baselineInvestment,
+      rates,
+      startDate,
+      endDate,
+      investments.length, // Unused index if color is provided
+      {
+        color: '#374151', // Gray-700
+        borderDash: [5, 5],
+        borderWidth: 2,
+      }
+    ));
+  }
+
+  return datasets;
 }
 
 /**

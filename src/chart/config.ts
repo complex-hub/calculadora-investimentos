@@ -74,7 +74,7 @@ export function getChartOptions(): ChartOptions<'line'> {
         },
         // Sort items by value (descending)
         itemSort: (a, b) => {
-          return b.parsed.y - a.parsed.y;
+          return (b.parsed.y ?? 0) - (a.parsed.y ?? 0);
         },
         callbacks: {
           title: (tooltipItems: TooltipItem<'line'>[]) => {

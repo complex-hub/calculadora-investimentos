@@ -14,6 +14,17 @@ export function createInitialState(rates?: Partial<GlobalRates>): AppState {
     },
     chartEndDate: getDefaultEndDate(),
     editingInvestmentId: null,
+    showBaseline: false,
+  };
+}
+
+/**
+ * Toggles the visibility of the baseline investment.
+ */
+export function toggleBaseline(state: AppState, show: boolean): AppState {
+  return {
+    ...state,
+    showBaseline: show,
   };
 }
 

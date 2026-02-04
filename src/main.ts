@@ -7,6 +7,7 @@ import {
   getInvestmentById,
   setChartEndDate,
   setInvestments,
+  toggleBaseline,
 } from './state';
 import { initializeFormHandlers, populateForm, resetForm } from './ui/form';
 import { renderInvestmentList } from './ui/investmentList';
@@ -77,7 +78,7 @@ async function main(): Promise<void> {
   const canvas = document.getElementById('investment-chart') as HTMLCanvasElement;
   if (canvas) {
     initializeChart(canvas);
-    toggleChartPlaceholder(state.investments.length === 0);
+    toggleChartPlaceholder(state.investments.length === 0 && !state.showBaseline);
     
     // Initial chart render if we have investments
     if (state.investments.length > 0) {
@@ -94,11 +95,18 @@ async function main(): Promise<void> {
     handleInvestmentRemove
   );
   initializeChartEndDate();
+  
+  // Set initial checkbox state
+  const baselineCheckbox = document.getElementById('toggle-baseline-btn') as HTMLInputElement;
+  if (baselineCheckbox) {
+    baselineCheckbox.checked = state.showBaseline;
+  }
 
   // 8. Set up event handlers
   initializeFormHandlers(handleInvestmentSubmit);
   initializeRatesPanelHandlers(handleRateChange, handleRatesRefresh);
   initializeChartEndDateHandler();
+  initializeBaselineToggle();
   initializeWindowResizeHandler();
   initializeClearAllHandler();
   initializeExportImportHandlers();
@@ -116,12 +124,12 @@ function updateChartWithCurrentState(): void {
   const startDate = getToday();
   const endDate = state.chartEndDate;
   
-  // Toggle placeholder based on whether there are investments
-  toggleChartPlaceholder(state.investments.length === 0);
+  // Toggle placeholder based on whether there are investments or baseline is shown
+  toggleChartPlaceholder(state.investments.length === 0 && !state.showBaseline);
   
   // Update chart
-  if (state.investments.length > 0) {
-    updateChart(state.investments, state.globalRates, startDate, endDate);
+  if (state.investments.length > 0 || state.showBaseline) {
+    updateChart(state.investments, state.globalRates, startDate, endDate, state.showBaseline);
   }
 }
 
@@ -318,6 +326,19 @@ function initializeRevertChartDateHandler(): void {
     updateChartWithCurrentState();
     
     showToast('Data do gráfico ajustada');
+  });
+}
+
+// ===== Baseline Toggle =====
+
+function initializeBaselineToggle(): void {
+  const checkbox = document.getElementById('toggle-baseline-btn') as HTMLInputElement;
+  
+  if (!checkbox) return;
+
+  checkbox.addEventListener('change', () => {
+    state = toggleBaseline(state, checkbox.checked);
+    updateChartWithCurrentState();
   });
 }
 

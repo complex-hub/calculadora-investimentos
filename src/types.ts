@@ -44,6 +44,7 @@ export interface AppState {
   globalRates: GlobalRates;
   chartEndDate: Date;
   editingInvestmentId: string | null;
+  showBaseline: boolean;
 }
 
 // ===== Tax Bracket =====

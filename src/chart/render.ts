@@ -41,6 +41,7 @@ let currentData: {
   rates: GlobalRates;
   startDate: Date;
   endDate: Date;
+  showBaseline: boolean;
 } | null = null;
 
 /**
@@ -127,7 +128,8 @@ export function updateChart(
   investments: Investment[],
   rates: GlobalRates,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  showBaseline: boolean
 ): void {
   if (!chartInstance) {
     console.error('Chart not initialized');
@@ -135,10 +137,10 @@ export function updateChart(
   }
   
   // Store current data for resize re-renders
-  currentData = { investments, rates, startDate, endDate };
+  currentData = { investments, rates, startDate, endDate, showBaseline };
   
   // Build datasets
-  const datasets = buildAllDatasets(investments, rates, startDate, endDate);
+  const datasets = buildAllDatasets(investments, rates, startDate, endDate, showBaseline);
   
   // Build tax bracket lines
   taxBracketLines = buildTaxBracketLines(startDate, endDate);
@@ -261,7 +263,8 @@ export function handleChartResize(): void {
     currentData.investments,
     currentData.rates,
     currentData.startDate,
-    currentData.endDate
+    currentData.endDate,
+    currentData.showBaseline
   );
 }
 
